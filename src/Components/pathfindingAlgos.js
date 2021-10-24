@@ -19,27 +19,42 @@ export const createAdjList = (grid) => {
 		for (let column = 0; column < 35; column++) {
 			const currentNode = String(column + ',' + row);
 			// Look up
-			if (row > 0) {
-				const nodeAbove = `${column},${row - 1}`;
-				addEdge(currentNode, nodeAbove);
-			}
-			// Look down
-			if (row < 13) {
-				const nodeBelow = `${column},${row + 1}`;
-				addEdge(currentNode, nodeBelow);
-			}
-			// Look left
-			if (column > 0) {
-				const nodeLeft = `${column - 1},${row}`;
-				addEdge(currentNode, nodeLeft);
-			}
-			// Look right
-			if (column < 34) {
-				const nodeRight = `${column + 1},${row}`;
-				addEdge(currentNode, nodeRight);
+			if (grid[row][column].prop !== 'wall') {
+				if (row > 0) {
+					const nodeAbove = `${column},${row - 1}`;
+
+					if (grid[row - 1][column].prop !== 'wall') {
+						addEdge(currentNode, nodeAbove);
+					}
+				}
+				// Look down
+				if (row < 13) {
+					const nodeBelow = `${column},${row + 1}`;
+
+					if (grid[row + 1][column].prop !== 'wall') {
+						addEdge(currentNode, nodeBelow);
+					}
+				}
+				// Look left
+				if (column > 0) {
+					const nodeLeft = `${column - 1},${row}`;
+
+					if (grid[row][column - 1].prop !== 'wall') {
+						addEdge(currentNode, nodeLeft);
+					}
+				}
+				// Look right
+				if (column < 34) {
+					const nodeRight = `${column + 1},${row}`;
+
+					if (grid[row][column + 1].prop !== 'wall') {
+						addEdge(currentNode, nodeRight);
+					}
+				}
 			}
 		}
 	}
+
 	return adjacencyList;
 };
 

@@ -25,17 +25,7 @@ export const gridData = (pHeight, pWidth) => {
 	return data;
 };
 
-const removePreviousIfExists = (grid, property) => {
-	for (let row = 0; row < 14; row++) {
-		for (let column = 0; column < 35; column++) {
-			if (grid[row][column].prop === property) {
-				grid[row][column].prop = 'empty';
-			}
-		}
-	}
-};
-
-const removePreviousIfExistsD3 = (grid, property) => {
+export const removePreviousIfExists = (grid, property) => {
 	for (let row = 0; row < 14; row++) {
 		for (let column = 0; column < 35; column++) {
 			if (grid[row][column].prop === property) {
@@ -51,7 +41,14 @@ export const updateGridNode = (grid, row, column, property, setGrid) => {
 		console.log('updating');
 		removePreviousIfExists(grid, property);
 	}
-	targetNode.prop = property;
+	if (property === 'path') {
+		if (targetNode.prop !== 'start' && targetNode.prop !== 'end') {
+			// removePreviousIfExists(grid, property);
+			targetNode.prop = property;
+		}
+	} else {
+		targetNode.prop = property;
+	}
 	const newGrid = [ ...grid ];
 	setGrid(newGrid);
 };

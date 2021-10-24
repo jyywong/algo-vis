@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import * as d3 from 'd3';
-import { getCoordsFromString, gridData, updateGridNode } from '../helperFunctions';
+import { getCoordsFromString, gridData, removePreviousIfExists, updateGridNode } from '../helperFunctions';
 import { breadthFirstSearch, createAdjList } from './pathfindingAlgos';
 
 const SortName = styled.h2`
@@ -36,11 +36,22 @@ const PathFindContainer = () => {
 
 	useEffect(
 		() => {
-			console.log('path', breadthFirstSearch(start.current, end.current, createAdjList(grid)));
-			const path = breadthFirstSearch(start.current, end.current, createAdjList(grid));
-			console.log('coords', getCoordsFromString(path[0]));
-			const svgRef = d3.select(d3Canvas.current);
+			// console.log('path', breadthFirstSearch(start.current, end.current, createAdjList(grid)));
 
+			const calculatePath = () => {
+				const path = breadthFirstSearch(start.current, end.current, createAdjList(grid));
+
+				if (typeof path !== 'undefined') {
+					removePreviousIfExists(grid, 'path');
+					for (const coords of path) {
+						console.log('this');
+						const [ x, y ] = getCoordsFromString(coords);
+						updateGridNode(grid, y, x, 'path', setGrid);
+					}
+				}
+			};
+
+			const svgRef = d3.select(d3Canvas.current);
 			const row = svgRef.selectAll('.row').data(grid).enter().append('g').attr('class', 'row');
 
 			const column = row
@@ -70,6 +81,8 @@ const PathFindContainer = () => {
 						return 'red';
 					} else if (d.prop === 'wall') {
 						return 'blue';
+					} else if (d.prop === 'path') {
+						return 'yellow';
 					} else {
 						return 'white';
 					}
@@ -79,6 +92,7 @@ const PathFindContainer = () => {
 					if (e.buttons === 1 && cursorMode.current === 'draw') {
 						// d3.select(this).style('fill', 'blue');
 						updateGridNode(grid, data.y, data.x, 'wall', setGrid);
+						calculatePath();
 					}
 				})
 				.on('click', function(e, data) {
@@ -86,12 +100,13 @@ const PathFindContainer = () => {
 						// d3.select(this).style('fill', 'green');
 
 						updateGridNode(grid, data.y, data.x, 'start', setGrid);
-
 						start.current = `${data.x},${data.y}`;
+						calculatePath();
 					} else if (cursorMode.current === 'end') {
 						// d3.select(this).style('fill', 'red');
 						updateGridNode(grid, data.y, data.x, 'end', setGrid);
 						end.current = `${data.x},${data.y}`;
+						calculatePath();
 					}
 				});
 
