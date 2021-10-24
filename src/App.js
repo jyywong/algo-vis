@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import BottomBar from './Components/BottomBar';
+import PathFindContainer from './Components/PathFindContainer';
 import TopBar from './Components/TopBar';
 import VisContainer from './Components/VisContainer';
 import GlobalStyle from './globalStyles';
@@ -17,14 +18,16 @@ const AppContainer = styled.div`
 `;
 
 function App() {
-	const [ arraySize, setArraySize ] = useState(10);
-	const [ sortAlgo, setSortAlgo ] = useState('Merge');
+	const [ arraySize, setArraySize ] = useState(15);
+	const [ sortAlgo, setSortAlgo ] = useState('Bubble');
+
 	return (
 		<React.Fragment>
 			<GlobalStyle />
 			<AppContainer>
 				<TopBar />
-				<VisContainer arraySize={arraySize} sortAlgo={sortAlgo} />
+				{/* <VisContainer arraySize={arraySize} sortAlgo={sortAlgo} /> */}
+				<PathFindContainer />
 				<BottomBar
 					arraySize={arraySize}
 					setArraySize={setArraySize}

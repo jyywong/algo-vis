@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import SortingControls from './SortingControls';
 
 const BarContainer = styled.div`
 	margin-top: auto;
@@ -35,15 +36,15 @@ const Options = styled.button`
 	font-size: 1.25rem;
 	margin: 0 2rem;
 `;
-const BottomBar = ({ arraySize, setArraySize, sortAlgo, setSortAlgo }) => {
+const BottomBar = ({ arraySize, setArraySize, sortAlgo, setSortAlgo, setCursorMode }) => {
 	const handleChange = (e) => {
 		setArraySize(e.target.value);
 	};
 	return (
 		<BarContainer>
-			<ArraySliderContainer>
+			{/* <ArraySliderContainer>
 				<Options>Array Size </Options>
-				<ArraySlider type="range" min="5" max="100" value={arraySize} onChange={handleChange} />
+				<ArraySlider type="range" min="5" max="50" value={arraySize} onChange={handleChange} />
 			</ArraySliderContainer>
 			<SortContainer>
 				<Options
@@ -60,13 +61,7 @@ const BottomBar = ({ arraySize, setArraySize, sortAlgo, setSortAlgo }) => {
 				>
 					Quick Sort
 				</Options>
-				<Options
-					onClick={() => {
-						setSortAlgo('Heap');
-					}}
-				>
-					Heap Sort
-				</Options>
+
 				<Options
 					onClick={() => {
 						setSortAlgo('Bubble');
@@ -81,7 +76,8 @@ const BottomBar = ({ arraySize, setArraySize, sortAlgo, setSortAlgo }) => {
 				>
 					Insertion Sort
 				</Options>
-			</SortContainer>
+			</SortContainer> */}
+			<SortingControls setCursorMode={setCursorMode} />
 		</BarContainer>
 	);
 };
