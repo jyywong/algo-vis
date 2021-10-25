@@ -1,13 +1,16 @@
+const size = 20;
+export const rowSize = 28;
+export const columnSize = 70;
 export const gridData = (pHeight, pWidth) => {
 	const data = [];
 	let xPos = 50;
 	let yPos = 20;
-	const width = 40;
-	const height = 40;
+	const width = size;
+	const height = size;
 
-	for (let row = 0; row < 14; row++) {
+	for (let row = 0; row < rowSize; row++) {
 		data.push([]);
-		for (let column = 0; column < 35; column++) {
+		for (let column = 0; column < columnSize; column++) {
 			data[row].push({
 				x: column,
 				y: row,
@@ -26,8 +29,8 @@ export const gridData = (pHeight, pWidth) => {
 };
 
 export const removePreviousIfExists = (grid, property) => {
-	for (let row = 0; row < 14; row++) {
-		for (let column = 0; column < 35; column++) {
+	for (let row = 0; row < rowSize; row++) {
+		for (let column = 0; column < columnSize; column++) {
 			if (grid[row][column].prop === property) {
 				grid[row][column].prop = 'empty';
 			}
