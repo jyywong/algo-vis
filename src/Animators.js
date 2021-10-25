@@ -168,3 +168,5 @@ export const animateQuickSort = (svgRef, animationInfo) => {
 		return currentAFrame(previousResponse);
 	}, Promise.resolve());
 };
+
+export const animatePathfinder = () => {};
