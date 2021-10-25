@@ -89,3 +89,51 @@ export const mergeSortContainer = (data) => {
 	};
 	return [ mergeSort(data), animationRoll, arrayOfArrays ];
 };
+
+export const quickSortContainer = (data) => {
+	const animationInfo = [];
+	const partition = (array, start, end) => {
+		const pivotValue = array[end];
+		let pivotIndex = start;
+
+		for (let i = start; i < end; i++) {
+			if (array[i] < pivotValue) {
+				// Swap elements
+				const animationFrame = {
+					pivotValue: array[pivotIndex],
+					swappers: [],
+					section: [ start, end ],
+					movePivot: false,
+					actualPivot: array[end]
+				};
+				animationFrame.swappers.push(array[i], array[pivotIndex]);
+				animationInfo.push(animationFrame);
+				[ array[i], array[pivotIndex] ] = [ array[pivotIndex], array[i] ];
+				pivotIndex++;
+			}
+		}
+		// Puts pivot value in middle
+		animationInfo.push({
+			pivotValue: array[pivotIndex],
+			swappers: [ array[pivotIndex], array[end] ],
+			section: [ start, end ],
+			movePivot: true,
+			actualPivot: array[start + end]
+		});
+		[ array[pivotIndex], array[end] ] = [ array[end], array[pivotIndex] ];
+		return pivotIndex;
+	};
+	const quickSort = (array, start, end) => {
+		if (start >= end) {
+			return;
+		}
+
+		let index = partition(array, start, end);
+
+		quickSort(array, start, index - 1);
+		quickSort(array, index + 1, end);
+	};
+	const arrayToSort = [ ...data ];
+	quickSort(arrayToSort, 0, arrayToSort.length - 1);
+	return animationInfo;
+};

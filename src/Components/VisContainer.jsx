@@ -1,8 +1,14 @@
 import React, { useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import * as d3 from 'd3';
-import { bubbleSort, insertionSort, mergeSortContainer } from '../SortingAlgos';
-import { animateBubbleorInsertion, animateMergeSort } from '../Animators';
+import { bubbleSort, insertionSort, mergeSortContainer, quickSortContainer } from '../SortingAlgos';
+import {
+	animateBubbleorInsertion,
+	animateBubbleorInsertionNew,
+	animateMergeSort,
+	animateMergeSortNew,
+	animateQuickSort
+} from '../Animators';
 
 const SortName = styled.h2`
 	font-size: 2.5rem;
@@ -29,6 +35,7 @@ const D3SVG = styled.svg`
 
 const VisContainer = ({ arraySize, sortAlgo }) => {
 	const [ fast, setFast ] = useState(false);
+	const [ hasChanged, setHasChanged ] = useState(false);
 	const d3Canvas = useRef();
 	const timeouts = useRef([]);
 	const generateArray = (quantity, max) => {
@@ -39,15 +46,7 @@ const VisContainer = ({ arraySize, sortAlgo }) => {
 		return set;
 	};
 	const data = Array.from(generateArray(arraySize, arraySize));
-	useEffect(
-		() => {
-			console.log(timeouts);
-			timeouts.current.forEach((val) => {
-				clearTimeout(val);
-			});
-		},
-		[ sortAlgo, arraySize ]
-	);
+
 	useEffect(
 		() => {
 			const svgRef = d3.select(d3Canvas.current);
@@ -73,14 +72,18 @@ const VisContainer = ({ arraySize, sortAlgo }) => {
 
 			if (sortAlgo === 'Bubble') {
 				animationRoll = bubbleSort(data);
-				animateBubbleorInsertion(fast, timeouts, svgRef, animationRoll);
+				const initialPromise = animateBubbleorInsertionNew(fast, timeouts, svgRef, animationRoll);
+				console.log(initialPromise);
 			} else if (sortAlgo === 'Insertion') {
 				animationRoll = insertionSort(data);
-				animateBubbleorInsertion(fast, timeouts, svgRef, animationRoll);
+				animateBubbleorInsertionNew(fast, timeouts, svgRef, animationRoll);
 			} else if (sortAlgo === 'Merge') {
 				const [ result, mergeAnimation, arrayOfArrays ] = mergeSortContainer(data);
 				console.log(arrayOfArrays);
-				animateMergeSort(fast, timeouts, svgRef, arrayOfArrays);
+				animateMergeSortNew(fast, timeouts, svgRef, arrayOfArrays);
+			} else if (sortAlgo === 'Quick') {
+				const animationInfo = quickSortContainer(data);
+				animateQuickSort(svgRef, animationInfo);
 			}
 
 			return () => {
@@ -89,6 +92,7 @@ const VisContainer = ({ arraySize, sortAlgo }) => {
 		},
 		[ data ]
 	);
+
 	return (
 		<React.Fragment>
 			<D3Container>
