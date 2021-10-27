@@ -1,29 +1,126 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { motion, AnimateSharedLayout } from 'framer-motion';
 import styled from 'styled-components';
 import * as d3 from 'd3';
-import { getCoordsFromString, gridData, removePreviousIfExists, updateGridNode } from '../helperFunctions';
+import { gridData, updateGridNode } from '../helperFunctions';
 import { aStar, breadthFirstSearch, createAdjList, greedyBFS } from './pathfindingAlgos';
+import PathLegend from './PathLegend';
 
-const SortName = styled.h2`
-	font-size: 2.5rem;
-	color: white;
-	margin-bottom: 2rem;
+const ControlsContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	background-color: #293241;
+	height: 25vh;
+	align-items: center;
+	justify-content: space-around;
+	width: 100%;
+	padding: 0 5rem;
+`;
+const AlgoContainer = styled(motion.div)`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	width: 100%;
+`;
+const AlgoHeader = styled.div`
+	margin-top: 1rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: #bff6f8;
+	font-size: 1.25rem;
+`;
+const AlgoOptionsContainer = styled.div`
+	display: flex;
+	justify-content: center;
+	align-items: center;
+`;
+const AlgoOption = styled(motion.button)`
+	cursor: pointer;
+	background-color: transparent;
+	border: none;
+	font-size: ${(props) => (props.isCurrentPath ? '3rem' : '1.25rem')};
+	color: ${(props) => (props.isCurrentPath ? '#EE6C4D' : 'white')};
+	margin: .2rem 2rem;
+	transition: color 1s;
+`;
+const Highlighter = styled(motion.div)`
+	border-radius: 10px;
+	position: absolute;
+	top: -5%;
+	left: -5%;
+	right: -5%;
+	bottom: -5%;
+	z-index: 1;
+	border: ${(props) => `4px solid ${props.color}`};
 `;
 const ButtonContainer = styled.div`
 	display: flex;
 	align-items: center;
-	justify-content: space-around;
+	justify-content: center;
 	width: 100%;
 `;
-const StyledButton = styled.button`
+const SubButtonContainer = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+`;
+const CursorContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+`;
+
+const CursorLabel = styled.div`
+	color: #bff6f8;
+	font-size: 1.25rem;
+`;
+const CursorButtonsContainer = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-left: 2px solid white;
+	border-right: 2px solid white;
+	border-radius: 10px;
+`;
+
+const ResetButton = styled.button`
 	cursor: pointer;
 	background-color: transparent;
-	border: 1px solid grey;
+	border: 1px solid;
 	border-radius: 10px;
 	color: white;
-	padding: 2rem;
-	font-size: 2rem;
+	padding: .25rem 3.25rem;
+	margin: .2rem 1rem;
+	font-size: 1.5rem;
 `;
+const StyledButton = styled.button`
+	position: relative;
+	cursor: pointer;
+	background-color: transparent;
+	border: none;
+	border-radius: 10px;
+	color: white;
+	padding: .25rem 2rem;
+	margin: .2rem 1rem;
+	font-size: 1.5rem;
+`;
+const VisualizeButton = styled.button`
+	cursor: pointer;
+	background-color: ${(props) => (props.animate ? '#98c1d9' : 'transparent')};
+	border: 3px solid #98c1d9;
+	border-radius: 10px;
+	color: ${(props) => (props.animate ? '#293241' : 'white')};
+	padding: .25rem 2rem;
+	margin: 1rem;
+
+	font-size: 1.5rem;
+	transition: all .5s;
+`;
+
 const D3Container = styled.div`
 	flex-grow: 1;
 	width: 100%;
@@ -42,31 +139,33 @@ const D3SVG = styled.svg`
 `;
 const PathFindContainer = () => {
 	const d3Canvas = useRef();
-	const cursorMode = useRef('start');
+	// const cursorMode = useRef('start');
+	const [ cursorMode, setCursorMode ] = useState('start');
+	const [ pathMode, setPathMode ] = useState('dijk');
 	const start = useRef();
 	const end = useRef();
-	// const grid = gridData(600, 1500);
-	const [ grid, setGrid ] = useState(gridData(600, 1500));
+	const grid = useRef(gridData(600, 1500));
+	// const [ grid, setGrid ] = useState(gridData(600, 1500));
 	const [ animate, setAnimate ] = useState(false);
-	const data = [];
+	const [ reset, setReset ] = useState(false);
 
 	useEffect(
 		() => {
+			const actualGrid = grid.current;
 			// console.log('path', breadthFirstSearch(start.current, end.current, createAdjList(grid)));
 			const svgRef = d3.select(d3Canvas.current);
-			const row = svgRef.selectAll('.row').data(grid).enter().append('g').attr('class', 'row');
+			const row = svgRef.selectAll('.row').data(actualGrid).enter().append('g').attr('class', 'row');
 			const calculatePath = () => {
-				// const result = breadthFirstSearch(start.current, end.current, createAdjList(grid));
-				// console.log('aStar', aStar(start.current, end.current, createAdjList(grid)));
-				const result = aStar(start.current, end.current, createAdjList(grid));
-				// const result = greedyBFS(start.current, end.current, createAdjList(grid));
-				// if (typeof path !== 'undefined') {npm
-				// 	removePreviousIfExists(grid, 'path');
-				// 	for (const coords of path) {
-				// 		const [ x, y ] = getCoordsFromString(coords);
-				// 		updateGridNode(grid, y, x, 'path', setGrid);
-				// 	}
-				// }
+				let result;
+				if (pathMode === 'dijk') {
+					result = breadthFirstSearch(start.current, end.current, createAdjList(actualGrid));
+					console.log('result', result);
+				} else if (pathMode === 'a*') {
+					result = aStar(start.current, end.current, createAdjList(actualGrid));
+				} else if (pathMode === 'gbfs') {
+					result = greedyBFS(start.current, end.current, createAdjList(actualGrid));
+				}
+
 				return result;
 			};
 
@@ -106,31 +205,31 @@ const PathFindContainer = () => {
 				})
 				.style('stroke', '#222')
 				.on('mouseover', function(e, data) {
-					if (e.buttons === 1 && cursorMode.current === 'draw') {
-						// d3.select(this).style('fill', 'blue');
-						updateGridNode(grid, data.y, data.x, 'wall', setGrid);
-						// calculatePath();
+					if (e.buttons === 1 && cursorMode === 'draw') {
+						d3.select(this).style('fill', 'black');
+						updateGridNode(actualGrid, data.y, data.x, 'wall');
 					}
 				})
 				.on('click', function(e, data) {
-					if (cursorMode.current === 'start') {
-						// d3.select(this).style('fill', 'green');
+					console.log(cursorMode);
+					if (cursorMode === 'start') {
+						d3.select(`[name="${start.current}"]`).style('fill', 'white');
+						d3.select(this).style('fill', 'green');
 
-						updateGridNode(grid, data.y, data.x, 'start', setGrid);
+						updateGridNode(actualGrid, data.y, data.x, 'start');
 						start.current = `${data.x},${data.y}`;
-						// calculatePath();
-					} else if (cursorMode.current === 'end') {
-						// d3.select(this).style('fill', 'red');
-						updateGridNode(grid, data.y, data.x, 'end', setGrid);
+					} else if (cursorMode === 'end') {
+						d3.select(`[name="${end.current}"]`).style('fill', 'white');
+						d3.select(this).style('fill', 'red');
+						updateGridNode(actualGrid, data.y, data.x, 'end');
 						end.current = `${data.x},${data.y}`;
-						// calculatePath();
 					}
 				});
 			if (animate) {
 				const [ path, animationInfo ] = calculatePath();
 				(async () => {
 					await animationInfo.reduce(async (previousPromise, coords) => {
-						// console.log(`${coords}`);
+						console.log(`pathframe`, coords);
 						await previousPromise;
 
 						if (coords !== start.current && coords !== end.current) {
@@ -143,64 +242,126 @@ const PathFindContainer = () => {
 								.end();
 						}
 					}, Promise.resolve());
-					path.reduce(async (previousPromise, coords) => {
-						await previousPromise;
-						if (coords !== start.current && coords !== end.current) {
-							return await row
-								.select(`[name="${coords}"]`)
-								.transition()
-								.style('fill', 'yellow')
-								.style('opacity', '1')
-								.duration(50)
-								.end();
-						}
-					});
+					if (path.length > 0) {
+						path.reduce(async (previousPromise, coords) => {
+							await previousPromise;
+							if (coords !== start.current && coords !== end.current) {
+								return await row
+									.select(`[name="${coords}"]`)
+									.transition()
+									.style('fill', 'yellow')
+									.style('opacity', '1')
+									.duration(50)
+									.end();
+							}
+						});
+					}
 				})();
 			}
 
 			return () => {
 				svgRef.selectAll('*').remove();
-				// setAnimate(false);
 			};
 		},
-		[ data, animate ]
+		[ animate, reset, cursorMode, pathMode ]
 	);
 	return (
 		<React.Fragment>
 			<D3Container>
-				<SortName> Pathfinder </SortName>
+				<PathLegend />
 				<D3SVG ref={d3Canvas}>Hello</D3SVG>
 			</D3Container>
-			<ButtonContainer>
-				<StyledButton
-					onClick={() => {
-						cursorMode.current = 'start';
-					}}
-				>
-					Start
-				</StyledButton>
-				<StyledButton
-					onClick={() => {
-						cursorMode.current = 'draw';
-					}}
-				>
-					Draw
-				</StyledButton>
-				<StyledButton
-					onClick={() => {
-						cursorMode.current = 'end';
-					}}
-				>
-					End
-				</StyledButton>
-				<StyledButton
-					onClick={() => {
-						setAnimate(!animate);
-					}}
-				>
-					Visualize
-				</StyledButton>
-			</ButtonContainer>
+			<ControlsContainer>
+				<AlgoContainer layout>
+					<AlgoHeader>Pathfinding Algorithm:</AlgoHeader>
+					<AlgoOptionsContainer>
+						<AlgoOption
+							isCurrentPath={pathMode === 'dijk'}
+							onClick={() => {
+								setPathMode('dijk');
+							}}
+							layout
+						>
+							Dijkstra's
+						</AlgoOption>
+
+						<AlgoOption
+							isCurrentPath={pathMode === 'gbfs'}
+							onClick={() => {
+								setPathMode('gbfs');
+							}}
+							layout
+						>
+							Greedy Best First Search
+						</AlgoOption>
+						<AlgoOption
+							isCurrentPath={pathMode === 'a*'}
+							onClick={() => {
+								setPathMode('a*');
+							}}
+							layout
+						>
+							A*
+						</AlgoOption>
+					</AlgoOptionsContainer>
+				</AlgoContainer>
+				<ButtonContainer>
+					<CursorContainer>
+						<CursorLabel>Cursor Mode:</CursorLabel>
+						<SubButtonContainer>
+							<ResetButton
+								onClick={() => {
+									grid.current = gridData(600, 1500);
+									start.current = null;
+									end.current = null;
+									setReset(!reset);
+								}}
+							>
+								Reset
+							</ResetButton>
+							<CursorButtonsContainer>
+								<AnimateSharedLayout>
+									<StyledButton
+										cMode={cursorMode === 'start'}
+										onClick={() => {
+											setCursorMode('start');
+										}}
+									>
+										Start Node
+										{cursorMode === 'start' && <Highlighter color="#4d8138" layoutId="highlight" />}
+									</StyledButton>
+									<StyledButton
+										cMode={cursorMode === 'end'}
+										onClick={() => {
+											setCursorMode('end');
+										}}
+									>
+										End Node
+										{cursorMode === 'end' && <Highlighter color="#813838" layoutId="highlight" />}
+									</StyledButton>
+									<StyledButton
+										cMode={cursorMode === 'draw'}
+										onClick={() => {
+											setCursorMode('draw');
+										}}
+									>
+										Walls
+										{cursorMode === 'draw' && <Highlighter color="#838383" layoutId="highlight" />}
+									</StyledButton>
+								</AnimateSharedLayout>
+							</CursorButtonsContainer>
+							<VisualizeButton
+								animate={animate}
+								onClick={() => {
+									setAnimate(!animate);
+								}}
+							>
+								Visualize{animate ? ' On' : ' Off'}
+							</VisualizeButton>
+						</SubButtonContainer>
+					</CursorContainer>
+				</ButtonContainer>
+			</ControlsContainer>
 		</React.Fragment>
 	);
 };

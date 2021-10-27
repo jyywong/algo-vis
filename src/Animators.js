@@ -1,10 +1,11 @@
-export const animateBubbleorInsertionNew = (fast, timeouts, svgRef, animationRoll) =>
+export const animateBubbleorInsertionNew = (fast, svgRef, animationRoll, hackAnimateCounter) => {
+	console.log('what animator gets', hackAnimateCounter);
 	animationRoll.reduce(async (previousPromise, frame, index) => {
 		const currentAFrame = async (frame) => {
-			console.log('hello');
+			console.log('animate inside', hackAnimateCounter);
+
 			const leftComp = svgRef.select(`[name="${frame.comparison[0]}"]`);
 			const rightComp = svgRef.select(`[name="${frame.comparison[1]}"]`);
-
 			if (fast) {
 				leftComp.attr('fill', 'green');
 				rightComp.attr('fill', 'green');
@@ -53,11 +54,13 @@ export const animateBubbleorInsertionNew = (fast, timeouts, svgRef, animationRol
 			}
 		};
 		await previousPromise;
-
-		return currentAFrame(frame);
+		if (hackAnimateCounter.current) {
+			return currentAFrame(frame);
+		}
 	}, Promise.resolve());
+};
 
-export const animateMergeSortNew = (fast, timeouts, svgRef, arrayOfArrays) => {
+export const animateMergeSortNew = (fast, timeouts, svgRef, arrayOfArrays, hackAnimateCounter) => {
 	arrayOfArrays.reduce(async (previousPromise, [ sortedArray, arraySection ], index) => {
 		const currentAFrame = async (sortedArray, index) => {
 			console.log(sortedArray, arraySection, index);
@@ -107,11 +110,13 @@ export const animateMergeSortNew = (fast, timeouts, svgRef, arrayOfArrays) => {
 			await Promise.all(returnPromise);
 		};
 		await previousPromise;
-		return currentAFrame(sortedArray, arraySection, index);
+		if (hackAnimateCounter.current) {
+			return currentAFrame(sortedArray, arraySection, index);
+		}
 	});
 };
 
-export const animateQuickSort = (svgRef, animationInfo) => {
+export const animateQuickSort = (svgRef, animationInfo, hackAnimateCounter) => {
 	animationInfo.reduce(async (previousPromise, animationFrame, index) => {
 		const { pivotValue, swappers, section, movePivot, actualPivot } = animationFrame;
 		const currentAFrame = async (previousResponse) => {
@@ -165,8 +170,9 @@ export const animateQuickSort = (svgRef, animationInfo) => {
 			return [ section, actualPivot ];
 		};
 		const previousResponse = await previousPromise;
-		return currentAFrame(previousResponse);
+		console.log('animateor inside', hackAnimateCounter);
+		if (hackAnimateCounter.current) {
+			return currentAFrame(previousResponse);
+		}
 	}, Promise.resolve());
 };
-
-export const animatePathfinder = () => {};

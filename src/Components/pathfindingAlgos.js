@@ -85,6 +85,7 @@ export const breadthFirstSearch = (start, end, adjList) => {
 			}
 		}
 	}
+	return [ [], animationInfo ];
 };
 
 class QElement {
@@ -171,6 +172,7 @@ export const aStar = (start, end, adjList) => {
 			}
 		}
 	}
+	return [ [], animationInfo ];
 };
 
 export const greedyBFS = (start, end, adjList) => {
@@ -182,10 +184,7 @@ export const greedyBFS = (start, end, adjList) => {
 	while (pQueue.items.length > 0) {
 		const { node, path } = pQueue.dequeue().element;
 
-		let costFromStart;
 		if (typeof path !== 'undefined') {
-			costFromStart = path.length;
-
 			path.push(node);
 		}
 		animationInfo.push(node);
@@ -199,7 +198,6 @@ export const greedyBFS = (start, end, adjList) => {
 		for (const adjacency of adjacencies) {
 			if (!visitedNodes.has(adjacency)) {
 				visitedNodes.add(adjacency);
-				// const neighborCostFromStart = costFromStart + 1;
 
 				const neighborNodeCoords = getCoordsFromString(adjacency);
 				const endCoords = getCoordsFromString(end);
@@ -212,4 +210,5 @@ export const greedyBFS = (start, end, adjList) => {
 			}
 		}
 	}
+	return [ [], animationInfo ];
 };
