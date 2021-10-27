@@ -6,7 +6,7 @@ const LegendContainer = styled.div`
 	align-items: center;
 	justify-content: center;
 	width: 100%;
-	margin-top: .75rem;
+	margin: .75rem 0;
 `;
 
 const PairContainer = styled.div`

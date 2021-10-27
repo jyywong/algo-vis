@@ -1,5 +1,3 @@
-import { merge } from 'd3-array';
-
 export const bubbleSort = (data) => {
 	const dataCopy = [ ...data ];
 	const animationRoll = [];

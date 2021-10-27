@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import styled from 'styled-components';
 import * as d3 from 'd3';
-import { getCoordsFromString, gridData, removePreviousIfExists, updateGridNode } from '../helperFunctions';
+import { gridData, updateGridNode } from '../helperFunctions';
 import { aStar, breadthFirstSearch, createAdjList, greedyBFS } from './pathfindingAlgos';
 import PathLegend from './PathLegend';
 

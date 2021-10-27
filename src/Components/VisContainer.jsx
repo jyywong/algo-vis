@@ -2,20 +2,8 @@ import React, { useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import * as d3 from 'd3';
 import { bubbleSort, insertionSort, mergeSortContainer, quickSortContainer } from '../SortingAlgos';
-import {
-	animateBubbleorInsertion,
-	animateBubbleorInsertionNew,
-	animateMergeSort,
-	animateMergeSortNew,
-	animateQuickSort
-} from '../Animators';
+import { animateBubbleorInsertionNew, animateMergeSortNew, animateQuickSort } from '../Animators';
 import SortLegend from './SortLegend';
-
-const SortName = styled.h2`
-	font-size: 2.5rem;
-	color: white;
-	margin-bottom: 2rem;
-`;
 
 const D3Container = styled.div`
 	flex-grow: 1;
@@ -39,7 +27,6 @@ const VisContainer = ({ arraySize, sortAlgo, animate, setAnimate }) => {
 	const d3Canvas = useRef();
 	const timeouts = useRef([]);
 	const hackAnimateCounter = useRef(false);
-	const hackIDCounter = useRef('c');
 	const generateArray = (quantity, max) => {
 		const set = new Set();
 		while (set.size < quantity) {
@@ -103,7 +90,7 @@ const VisContainer = ({ arraySize, sortAlgo, animate, setAnimate }) => {
 			const newDataInfo = Array.from(generateArray(arraySize, arraySize));
 			dataInfo.current = newDataInfo;
 		},
-		[ arraySize ]
+		[ arraySize, setAnimate ]
 	);
 
 	useEffect(
