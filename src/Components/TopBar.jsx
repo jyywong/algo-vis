@@ -17,11 +17,11 @@ const Logo = styled.h1`
 	color: #ee6c4d;
 `;
 
-const TopBar = () => {
+const TopBar = ({ mode, setMode }) => {
 	return (
 		<Bar>
 			<Logo>AlgoVis</Logo>
-			<ModeSwitcher />
+			<ModeSwitcher mode={mode} setMode={setMode} />
 		</Bar>
 	);
 };

@@ -1,17 +1,20 @@
+import { merge } from 'd3-array';
+
 export const bubbleSort = (data) => {
+	const dataCopy = [ ...data ];
 	const animationRoll = [];
 	let previous = null;
-	for (let i = 0; i < data.length; i++) {
-		for (let j = 0; j < data.length - i - 1; j++) {
-			const animationFrame = { previous, comparison: [ data[j], data[j + 1] ], swap: false };
-			if (data[j] > data[j + 1]) {
-				let temp = data[j];
-				data[j] = data[j + 1];
-				data[j + 1] = temp;
+	for (let i = 0; i < dataCopy.length; i++) {
+		for (let j = 0; j < dataCopy.length - i - 1; j++) {
+			const animationFrame = { previous, comparison: [ dataCopy[j], dataCopy[j + 1] ], swap: false };
+			if (dataCopy[j] > dataCopy[j + 1]) {
+				let temp = dataCopy[j];
+				dataCopy[j] = dataCopy[j + 1];
+				dataCopy[j + 1] = temp;
 				animationFrame.swap = true;
 			}
 			animationRoll.push(animationFrame);
-			previous = data[j];
+			previous = dataCopy[j];
 		}
 	}
 	return animationRoll;
@@ -19,23 +22,24 @@ export const bubbleSort = (data) => {
 
 export const insertionSort = (data) => {
 	const animationRoll = [];
+	const dataCopy = [ ...data ];
 	let i, key, j;
-	for (i = 1; i < data.length; i++) {
-		key = data[i];
+	for (i = 1; i < dataCopy.length; i++) {
+		key = dataCopy[i];
 		j = i - 1;
-		const animationFrame = { comparison: [ data[j], key ] };
+		const animationFrame = { comparison: [ dataCopy[j], key ] };
 		animationRoll.push(animationFrame);
-		/* Move elements of data[0..i-1], that are 
+		/* Move elements of dataCopy[0..i-1], that are 
         greater than key, to one position ahead 
         of their current position */
-		while (j >= 0 && data[j] > key) {
-			const swapFrame = { comparison: [ data[j], key ], swap: true };
+		while (j >= 0 && dataCopy[j] > key) {
+			const swapFrame = { comparison: [ dataCopy[j], key ], swap: true };
 
-			data[j + 1] = data[j];
+			dataCopy[j + 1] = dataCopy[j];
 			j = j - 1;
 			animationRoll.push(swapFrame);
 		}
-		data[j + 1] = key;
+		dataCopy[j + 1] = key;
 	}
 	return animationRoll;
 };
@@ -43,8 +47,9 @@ export const insertionSort = (data) => {
 export const mergeSortContainer = (data) => {
 	const animationRoll = [];
 	const arrayOfArrays = [];
+	const dataCopy = [ ...data ];
 	const dataReference = [ ...data ];
-	const mergeSort = (data) => {
+	const mergeSort = (dataCopy) => {
 		const findMaxAndMinIndex = (sortArray) => {
 			let max = 0;
 			let min = 100;
@@ -78,16 +83,17 @@ export const mergeSortContainer = (data) => {
 			return [ ...sortedArray, ...left, ...right ];
 		};
 
-		const half = data.length / 2;
-		if (data.length <= 1) {
-			return data;
+		const half = dataCopy.length / 2;
+		if (dataCopy.length <= 1) {
+			return dataCopy;
 		}
-		const left = data.splice(0, half);
-		const right = data;
+		const left = dataCopy.splice(0, half);
+		const right = dataCopy;
 
 		return merge(mergeSort(left), mergeSort(right));
 	};
-	return [ mergeSort(data), animationRoll, arrayOfArrays ];
+	mergeSort(dataCopy);
+	return arrayOfArrays;
 };
 
 export const quickSortContainer = (data) => {

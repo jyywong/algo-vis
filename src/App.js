@@ -20,20 +20,35 @@ const AppContainer = styled.div`
 function App() {
 	const [ arraySize, setArraySize ] = useState(15);
 	const [ sortAlgo, setSortAlgo ] = useState('Bubble');
+	const [ animate, setAnimate ] = useState(false);
+	const [ mode, setMode ] = useState('path');
+	console.log(mode);
 
 	return (
 		<React.Fragment>
 			<GlobalStyle />
 			<AppContainer>
-				<TopBar />
-				{/* <VisContainer arraySize={arraySize} sortAlgo={sortAlgo} /> */}
-				<PathFindContainer />
-				<BottomBar
-					arraySize={arraySize}
-					setArraySize={setArraySize}
-					sortAlgo={sortAlgo}
-					setSortAlgo={setSortAlgo}
-				/>
+				<TopBar mode={mode} setMode={setMode} />
+				{mode === 'path' && <PathFindContainer />}
+
+				{mode === 'sort' && (
+					<React.Fragment>
+						<VisContainer
+							arraySize={arraySize}
+							sortAlgo={sortAlgo}
+							animate={animate}
+							setAnimate={setAnimate}
+						/>
+						<BottomBar
+							arraySize={arraySize}
+							setArraySize={setArraySize}
+							sortAlgo={sortAlgo}
+							setSortAlgo={setSortAlgo}
+							animate={animate}
+							setAnimate={setAnimate}
+						/>
+					</React.Fragment>
+				)}
 			</AppContainer>
 		</React.Fragment>
 	);

@@ -1,6 +1,7 @@
 const size = 20;
 export const rowSize = 28;
 export const columnSize = 70;
+
 export const gridData = (pHeight, pWidth) => {
 	const data = [];
 	let xPos = 50;
@@ -38,7 +39,7 @@ export const removePreviousIfExists = (grid, property) => {
 	}
 };
 
-export const updateGridNode = (grid, row, column, property, setGrid) => {
+export const updateGridNode = (grid, row, column, property) => {
 	const targetNode = grid[row][column];
 	if (property === 'start' || property === 'end') {
 		console.log('updating');
@@ -52,8 +53,8 @@ export const updateGridNode = (grid, row, column, property, setGrid) => {
 	} else {
 		targetNode.prop = property;
 	}
-	const newGrid = [ ...grid ];
-	setGrid(newGrid);
+	// const newGrid = [ ...grid ];
+	// setGrid(newGrid);
 };
 
 export const getCoordsFromString = (node) => {

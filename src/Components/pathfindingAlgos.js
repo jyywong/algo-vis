@@ -85,6 +85,7 @@ export const breadthFirstSearch = (start, end, adjList) => {
 			}
 		}
 	}
+	return [ [], animationInfo ];
 };
 
 class QElement {
@@ -171,6 +172,7 @@ export const aStar = (start, end, adjList) => {
 			}
 		}
 	}
+	return [ [], animationInfo ];
 };
 
 export const greedyBFS = (start, end, adjList) => {
@@ -212,4 +214,5 @@ export const greedyBFS = (start, end, adjList) => {
 			}
 		}
 	}
+	return [ [], animationInfo ];
 };
