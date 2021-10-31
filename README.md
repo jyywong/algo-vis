@@ -4,7 +4,11 @@
 This is a webapp where users can visualize both pathfinding and sorting algorithms. Sorting algorithms include Bubble Sort, Insertion Sort, Merge Sort, and Quick Sort. Pathfinding algorithms include Djikstra's Algorithm, A*, and Greedy Best First Search.
 
 ## Preview
+### Pathfinding example
+![me](https://github.com/jyywong/algo-vis/blob/master/public/GithubGifs/pathfindingPreview.gif)
 
+### Sorting example
+![me](https://github.com/jyywong/algo-vis/blob/master/public/GithubGifs/sortingPreview.gif)
 ## What did I learn?
 With this project I delved into D3.js and learned the data binding model of D3.
 I learned the basics of how to enter data into D3 objects and how to animate
